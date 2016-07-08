@@ -85,9 +85,19 @@
  */
 -(void)createFilePathWithTimestamp:(NSTimeInterval)timestamp{
     if(filePath==nil){
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        time_t    now = time(0);
+        struct tm *cur_time;
+        cur_time = localtime(&now);
+        
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSMoviesDirectory, NSUserDomainMask, YES);
         NSString *documentPath = [paths objectAtIndex:0];
-        NSString* filename = [NSString stringWithFormat:@"sessionlog-%d",(int)timestamp];
+        NSString* filename = [NSString stringWithFormat:@"%d-%02d-%02d_%02d-%02d-%02d",
+                              cur_time->tm_year+1900,
+                              cur_time->tm_mon+1,
+                              cur_time->tm_mday,
+                              cur_time->tm_hour,
+                              cur_time->tm_min,
+                              cur_time->tm_sec];
         filePath = [documentPath stringByAppendingPathComponent:filename];
         filePath = [NSString stringWithFormat:@"%@.xml",filePath];
     }
