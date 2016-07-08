@@ -12,6 +12,8 @@
 #import "XMLFileAccessMethods.h"
 #import <AppKit/AppKit.h>
 
+#include <sys/time.h>
+
 @implementation AXAll{
     
     
@@ -116,7 +118,8 @@ Return an array of AXUIElementRefs corresponding to a widget and all its parents
 }
 
 
-
+// Structure for the current Unix epoch in milliseconds.
+static struct timeval system_time;
 
 /**
  Handle a NSEvent event, converts its location to carbon coordinates and call handleEventInLocation:ofMouseType:withModifiers: for the corresponding event
@@ -124,6 +127,13 @@ Return an array of AXUIElementRefs corresponding to a widget and all its parents
  */
 //TODO: check how modifiers are handled
 -(void)handleEvent:(NSEvent*)event{
+    // Get the local system time in UTC.
+    gettimeofday(&system_time, NULL);
+    
+    // Convert the local system time to a Unix epoch in MS.
+    NSTimeInterval time = (system_time.tv_sec * 1000) + (system_time.tv_usec / 1000);
+    //NSTimeInterval time = [[NSDate date] timeIntervalSince1970];
+    
     CGPoint where = [UIElementUtilities carbonScreenPointFromCocoaScreenPoint:[event locationInWindow]];
     AXUIElementRef element = [UIElementUtilitiesAdditions elementAtCGPoint:where withSystemWideElement:systemWideElement];
     AXUIElementRef parent = [UIElementUtilities parentOfUIElement:element];
@@ -134,17 +144,9 @@ Return an array of AXUIElementRefs corresponding to a widget and all its parents
         array = [self getArrayOfAncestorsAndElement:parent];
     }
     
-
     NSXMLElement* children = [self getXMLDescriptionOfElementAndChildren:element];
 
-    
-    
-    
-    NSTimeInterval time = [[NSDate date] timeIntervalSince1970];
     [self.xmlFileAccess addXMLElementToFileForMouseType:(int)[event type] withModifiers:[event modifierFlags] andAXUIElements:array andChildren:children andSiblings:siblings atTime:time];
-    
-
-    
 }
 
 
