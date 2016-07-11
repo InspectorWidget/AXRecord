@@ -23,12 +23,10 @@
         windowsInfoArray = [WindowGrabber getWindowList];
         self.xmlFileAccess = xml;
         [NSTimer scheduledTimerWithTimeInterval:delay target:self selector:@selector(processTimer) userInfo:nil repeats:YES];
-        //[NSTimer scheduledTimerWithTimeInterval:0.2f target:self selector:@selector(printWindows) userInfo:nil repeats:YES];
+      
     }
     return self;
 }
-
-
 
 
 

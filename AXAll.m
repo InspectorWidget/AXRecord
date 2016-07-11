@@ -15,7 +15,7 @@
 #include <sys/time.h>
 
 @implementation AXAll{
-    
+    pid_t current_pid;
     
  }
 
@@ -25,13 +25,42 @@ static AXUIElementRef systemWideElement;
 -(id)initWithXMLFileAccess:(XMLFileAccessMethods*)xml{
     self = [super init];
     if(self){
+        current_pid=0;
         systemWideElement = AXUIElementCreateSystemWide();
         self.xmlFileAccess = xml;
         [self registerGlobalListener];
-
+          [NSTimer scheduledTimerWithTimeInterval:0.5f target:self selector:@selector(processTimerForAX) userInfo:nil repeats:YES];
     }
     return self;
 }
+
+
+
+/**
+ Called when the front app has changed
+ Retrieve the AXUIElementRef element corresponding to the novel frontmost app and
+ calls handleAXElement(AXUIelementRef) to deal with it
+ @param notification the notification corresponding to the app change event
+ */
+- (void)foremostAppActivated:(NSNotification *)notification{
+    
+    NSRunningApplication *activatedApp = [[notification userInfo] objectForKey:NSWorkspaceApplicationKey];
+    
+    
+    pid_t pid = (pid_t)[activatedApp processIdentifier];
+    
+    current_pid=pid;
+    
+}
+
+-(void)processTimerForAX{
+    if(current_pid!=0){
+        [UIElementUtilitiesAdditions logWindowInfoForAp:current_pid];
+    }
+    //
+}
+
+
 
 
 
@@ -43,37 +72,10 @@ static AXUIElementRef systemWideElement;
     [NSEvent addGlobalMonitorForEventsMatchingMask:mask handler:^(NSEvent *event){
         [self handleEvent:event];
     }];
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(foremostAppActivated:) name:NSWorkspaceDidActivateApplicationNotification object:nil];
+
+    
 }
-
-///**
-// register a shared notification called when the frontmost app change and makes sure that the foremostAppActivated: method is called
-// */
-//
-//-(void)registerAppTracker{
-//    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(foremostAppActivated:) name:NSWorkspaceDidActivateApplicationNotification object:nil];
-//}
-//
-//
-//
-// /** 
-//  Called when the front app has changed
-//  Retrieve the AXUIElementRef element corresponding to the novel frontmost app and 
-//  calls handleAXElement(AXUIelementRef) to deal with it
-//  @param notification the notification corresponding to the app change event
-//  */
-//- (void)foremostAppActivated:(NSNotification *)notification{
-//   
-//    NSRunningApplication *activatedApp = [[notification userInfo] objectForKey:NSWorkspaceApplicationKey];
-//
-//    //NSLog(@"changed app for %@",[activatedApp localizedName]);
-//    NSTimeInterval time = [[NSDate date] timeIntervalSince1970];
-//    pid_t pid = (pid_t)[activatedApp processIdentifier];
-//    
-//
-// 
-//    [self.xmlFileAccess writeChangeApp:[activatedApp localizedName] atTime:time];
-//}
-
 
 
 
@@ -230,76 +232,6 @@ static struct timeval system_time;
 //}
 
 
-
-
-
-#pragma mark obsolete because handled using eventtaps
-
-///**
-// Handle a CGEvent event, retrieve its location to carbon coordinates and call handleEventInLocation:ofMouseType:withModifiers: for the corresponding event
-// @warning this method is obsolete
-// @param cgevent a CGEventRef
-// @param type a CGEventType (should be mouse down or up)
-// */
-//-(void)handleEvent:(CGEventRef)cgevent ofType:(CGEventType)type{
-//    CGPoint where = CGEventGetLocation(cgevent);
-//    [self handleEventInLocation:where ofMouseType:type withModifiers:CGEventGetFlags(cgevent)];
-//}
-//
-
-
-////THIS ONE IS OBSOLETE
-//-(void)registerEventTap{
-//
-//    CGEventMask mask =NSLeftMouseDownMask|NSLeftMouseUpMask|NSRightMouseDownMask|NSRightMouseUpMask;
-//
-//
-//    eventTap = CGEventTapCreate(kCGHIDEventTap, kCGHeadInsertEventTap, kCGEventTapOptionDefault, mask, myCallback, (__bridge void *)(self));
-//
-//    if (!eventTap) {
-//        NSLog(@"Couldn't create event tap!");
-//        exit(1);
-//    }
-//
-//    runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, eventTap, 0);
-//
-//    CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopCommonModes);
-//
-//    CGEventTapEnable(eventTap, true);
-//    CFRelease(eventTap);
-//    CFRelease(runLoopSource);
-//
-//}
-
-
-
-
-//-(CGEventRef)processEventTap:(CGEventRef)cgevent ofType:(CGEventType)type{
-//    // Check the types
-//    
-//    if ((type==kCGEventTapDisabledByUserInput)||(type == kCGEventTapDisabledByTimeout)) {
-//        // required in case of disabling
-//        NSLog(@"eventTap Was Disabled So Reenable Now");
-//        CGEventTapEnable(eventTap, true);
-//        return cgevent;
-//    }
-//    else if((type==NSLeftMouseDown)||(type == NSLeftMouseUp)||(type == NSRightMouseDown)||(type == NSRightMouseUp)){
-//        //Beware that origin is topleft for CGevents, bottomleft for NSEvents
-//        NSLog(@"type is %d",type);
-//        [self handleEvent:cgevent ofType:type];
-//    }
-//   
-//    return cgevent;
-//}
-
-
-
-//CGEventRef myCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon) {
-//    AXAll* master = (__bridge AXAll*)refcon;
-//    return [master processEventTap:event ofType:type];
-//    
-//    
-//}
 
 
 

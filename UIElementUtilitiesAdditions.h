@@ -42,4 +42,7 @@
 /* Custom methods testing whether or not the specific attribute exist*/
 +(BOOL)hasGivenElement:(AXUIElementRef)element attribute:(NSString*)attribute;
 
+
++(void)logWindowInfoForAp:(pid_t)pid;
+
 @end

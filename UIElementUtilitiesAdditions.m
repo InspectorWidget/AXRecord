@@ -11,6 +11,23 @@
 
 @implementation UIElementUtilitiesAdditions
 
+// -------------------------------------------------------------------------------
+//	logWindowInfo:
+//
+//	called for logging the entire xml description of the main window
+// -------------------------------------------------------------------------------
+
++(void)logWindowInfoForAp:(pid_t)pid{
+
+    
+    
+    AXUIElementRef app_element = AXUIElementCreateApplication(pid);
+    NSArray* desc = [UIElementUtilities siblingsOfUIElement:app_element];
+    if(desc){
+        NSLog(@"%@",desc);
+    }
+    
+}
 
 
 
@@ -86,7 +103,7 @@
     if(hasVisibleChildren){
         
         
-        CFTypeRef children = (__bridge AXUIElementRef)[UIElementUtilities valueOfAttribute:NSAccessibilityChildrenAttribute ofUIElement:element];
+        CFTypeRef children = (__bridge AXUIElementRef)[UIElementUtilities valueOfAttribute:NSAccessibilityVisibleChildrenAttribute ofUIElement:element];
         if(children){
             if(CFGetTypeID(children)==CFArrayGetTypeID()){
                 CFIndex count = CFArrayGetCount(children);
@@ -112,6 +129,9 @@
     
     return theDescriptionStr;
 }
+
+
+
 
 
 
