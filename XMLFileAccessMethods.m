@@ -91,7 +91,7 @@
         
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSMoviesDirectory, NSUserDomainMask, YES);
         NSString *documentPath = [paths objectAtIndex:0];
-        NSString* filename = [NSString stringWithFormat:@"%d-%02d-%02d_%02d-%02d-%02d",
+        NSString* filename = [NSString stringWithFormat:@"%d-%02d-%02d-%02d-%02d-%02d",
                               cur_time->tm_year+1900,
                               cur_time->tm_mon+1,
                               cur_time->tm_mday,
@@ -292,30 +292,10 @@ return NO;
     [element  addAttribute:[NSXMLNode attributeWithName:@"h" stringValue:[NSString stringWithFormat:@"%.0f",windowInfo.frame.size.height]]];
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 -(BOOL)addXMLElementToFileForMouseType:(int)mouseType withModifiers:(unsigned long)modifiers andAXUIElements:(NSArray*)array atTime:(NSTimeInterval)time{
     NSXMLElement* element = [self createXMLElementForMouseType:mouseType withModifiers:modifiers andAXUIElements:array atTime:time];
     return [self addXMLElementToRoot:element];
 }
-
-
 
 
 /**
@@ -333,7 +313,33 @@ return NO;
     return [self addXMLElementToRoot:element];
 }
 
+/**
+ call a method that creates a XMLElement for the element+children contained in the application tree
+ and adds it to the  root of the XML FIle
+ @param time at which the event occured
+ @param children NSXMLElement of the selected element and all its children
+ @return a YES if everything went ok
+ */
+-(BOOL)addXMLElementToFileForApplication:(NSXMLElement*)children atTime:(NSTimeInterval)time{
+    NSXMLElement* element = [self createXMLElementForApplication:children atTime:time];
+    return [self addXMLElementToRoot:element];
+}
 
+/**
+ Create an XML element for the application in focus
+ @param time at which the event occured
+ @param array NSArray of all the AXUIElementRef
+ @return a NSXMLElement corresponding to the XML description of a AXUIelementRef at a given location and all its parents
+ */
+-(NSXMLElement*)createXMLElementForApplication:(NSXMLElement*)children atTime:(NSTimeInterval)time{
+    
+    NSXMLElement *xmlElement = [[NSXMLElement alloc] initWithName:@"application"];
+    [xmlElement addAttribute:[NSXMLNode attributeWithName:@"time" stringValue:[NSString stringWithFormat:@"%f",time]]];
+    NSXMLElement* lastchild=xmlElement;
+    [lastchild addChild:children];
+    return xmlElement;
+    
+}
 
 /** Create a XML Element describing an element and all its children
  @param AXUIElementRef the focused element
@@ -349,22 +355,31 @@ return NO;
     CFTypeRef children = (__bridge AXUIElementRef)[UIElementUtilities valueOfAttribute:NSAccessibilityChildrenAttribute ofUIElement:element];
     CFTypeRef visibleRows = (__bridge CFTypeRef)([UIElementUtilities valueOfAttribute:NSAccessibilityVisibleRowsAttribute ofUIElement:element]);
     CFTypeRef rows = (__bridge CFTypeRef)([UIElementUtilities valueOfAttribute:NSAccessibilityRowsAttribute ofUIElement:element]);
-    
+    CFTypeRef visibleColumns = (__bridge CFTypeRef)([UIElementUtilities valueOfAttribute:NSAccessibilityVisibleColumnsAttribute ofUIElement:element]);
+    CFTypeRef columns = (__bridge CFTypeRef)([UIElementUtilities valueOfAttribute:NSAccessibilityColumnsAttribute ofUIElement:element]);
+    //todo for visiblecolumns
     
     CFTypeRef iterateOn=nil;
     
+    // rows have precedence since they contain references to columns
     // if visibleChildren, it means there are non-visible children (that we don't care of)
-    if(visibleChildren){
-        iterateOn = visibleChildren;
-    }
-    else if(children){
-        iterateOn = children;
-    }
-    else if(visibleRows){
+    if(visibleRows){
         iterateOn = visibleRows;
     }
     else if(rows){
         iterateOn = rows;
+    }
+    else if(visibleColumns){
+        iterateOn = visibleColumns;
+    }
+    else if(columns){
+        iterateOn = columns;
+    }
+    else if(visibleChildren){
+        iterateOn = visibleChildren;
+    }
+    else if(children){
+        iterateOn = children;
     }
     
     if(iterateOn!=nil){
@@ -386,7 +401,7 @@ return NO;
 
 
 /**
- Create a  for a mouse down/up  XML Element describing the AXUIElement at the event location
+ Create an XML element for a mouse down/up  XML Element describing the AXUIElement at the event location
  @param mouseType (int) value corresponding to the event type
  @param modifiers modifiers flag
  @param time at which the event occured
@@ -413,7 +428,6 @@ return NO;
     return xmlElement;
     
 }
-
 
 
 #pragma mark log all for all windows

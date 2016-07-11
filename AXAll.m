@@ -28,8 +28,8 @@ static AXUIElementRef systemWideElement;
         current_pid=0;
         systemWideElement = AXUIElementCreateSystemWide();
         self.xmlFileAccess = xml;
-        [self registerGlobalListener];
-          [NSTimer scheduledTimerWithTimeInterval:0.5f target:self selector:@selector(processTimerForAX) userInfo:nil repeats:YES];
+       // [self registerGlobalListener];
+        //  [NSTimer scheduledTimerWithTimeInterval:0.5f target:self selector:@selector(processTimerForAX) userInfo:nil repeats:YES];
     }
     return self;
 }
@@ -55,7 +55,15 @@ static AXUIElementRef systemWideElement;
 
 -(void)processTimerForAX{
     if(current_pid!=0){
-        [UIElementUtilitiesAdditions logWindowInfoForAp:current_pid];
+        // Get the local system time in UTC.
+        gettimeofday(&system_time, NULL);
+        
+        // Convert the local system time to a Unix epoch in MS.
+        NSTimeInterval time = (system_time.tv_sec * 1000) + (system_time.tv_usec / 1000);
+
+        AXUIElementRef app_element = AXUIElementCreateApplication(current_pid);
+        NSXMLElement* children = [self getXMLDescriptionOfElementAndChildren:app_element];
+        [self.xmlFileAccess addXMLElementToFileForApplication:children atTime:time];
     }
     //
 }

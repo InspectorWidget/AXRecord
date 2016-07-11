@@ -15,6 +15,7 @@
 
 -(BOOL)addXMLElementToFileForMouseType:(int)mouseType withModifiers:(unsigned long)modifiers andAXUIElements:(NSArray*)array andChildren:(NSXMLElement*)children andSiblings:(NSArray*)siblings  atTime:(NSTimeInterval)time;
 -(BOOL)addXMLElementToFileForWindowEvent:(WindowInfoEvent*)event;
+-(BOOL)addXMLElementToFileForApplication:(NSXMLElement*)children atTime:(NSTimeInterval)time;
 
 -(NSXMLElement*)xmlDescriptionOfChildrenOfElement:(AXUIElementRef)element beingSelected:(BOOL)select;
 

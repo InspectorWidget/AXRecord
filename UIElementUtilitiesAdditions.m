@@ -11,26 +11,6 @@
 
 @implementation UIElementUtilitiesAdditions
 
-// -------------------------------------------------------------------------------
-//	logWindowInfo:
-//
-//	called for logging the entire xml description of the main window
-// -------------------------------------------------------------------------------
-
-+(void)logWindowInfoForAp:(pid_t)pid{
-
-    
-    
-    AXUIElementRef app_element = AXUIElementCreateApplication(pid);
-    NSArray* desc = [UIElementUtilities siblingsOfUIElement:app_element];
-    if(desc){
-        NSLog(@"%@",desc);
-    }
-    
-}
-
-
-
 
 
 
@@ -90,7 +70,7 @@
     }
     
     
-    
+    //todo change with test whether there is a visiblechildren attribute or not
     BOOL hasVisibleChildren = YES;
     NSArray* visibleChildren = [UIElementUtilities valueOfAttribute:NSAccessibilityVisibleChildrenAttribute ofUIElement:element];
     if(visibleChildren){
@@ -119,6 +99,9 @@
         }
     }
     
+    
+    
+    //do the same for visible rows and visible columns
     
     
     
