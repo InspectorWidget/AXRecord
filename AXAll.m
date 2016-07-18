@@ -28,8 +28,8 @@ static AXUIElementRef systemWideElement;
         current_pid=0;
         systemWideElement = AXUIElementCreateSystemWide();
         self.xmlFileAccess = xml;
-       // [self registerGlobalListener];
-        //  [NSTimer scheduledTimerWithTimeInterval:0.5f target:self selector:@selector(processTimerForAX) userInfo:nil repeats:YES];
+        [self registerGlobalListener];
+        [NSTimer scheduledTimerWithTimeInterval:0.5f target:self selector:@selector(processTimerForAX) userInfo:nil repeats:YES];
     }
     return self;
 }
