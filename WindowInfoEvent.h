@@ -26,10 +26,16 @@ enum {
 
 @property int layerNumber;
 @property NSTimeInterval timestamp;
+@property uint64 clock;
 
 @property vnrWindowInfoEventType eventType;
 @property NSArray* windows;
 
--(id)initWith:(VnrWindowInfo*)windowInfo atLayerNumber:(int)layernum forEventType:(vnrWindowInfoEventType)event atTimestamp:(NSTimeInterval)time andAllWindows:(NSArray*)windows;
+-(id)initWith:(VnrWindowInfo*)windowInfo
+atLayerNumber:(int)layernum
+ forEventType:(vnrWindowInfoEventType)event
+  atTimestamp:(NSTimeInterval)time
+      atClock:(uint64)clock
+andAllWindows:(NSArray*)windows;
 
 @end

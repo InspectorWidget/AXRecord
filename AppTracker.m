@@ -14,7 +14,7 @@
 #import "AppTracker.h"
 #import <AppKit/AppKit.h>
 
-
+#include "platform.h"
 
 @implementation AppTracker
 
@@ -36,14 +36,14 @@
  @param notification the notification corresponding to the app change event
  */
 - (void)foremostAppActivated:(NSNotification *)notification{
+    uint64 clock = os_gettime_ns();
     
     NSRunningApplication *activatedApp = [[notification userInfo] objectForKey:NSWorkspaceApplicationKey];
     
     NSTimeInterval time = [[NSDate date] timeIntervalSince1970];
     pid_t pid = (pid_t)[activatedApp processIdentifier];
     
-    
-    [self.xmlFileAccess writeChangeApp:[activatedApp localizedName] atTime:time];
+    [self.xmlFileAccess writeChangeApp:[activatedApp localizedName] atTime:time atClock:clock];
 }
 
 

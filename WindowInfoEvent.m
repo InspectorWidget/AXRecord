@@ -11,13 +11,20 @@
 
 @implementation WindowInfoEvent
 
--(id)initWith:(VnrWindowInfo*)windowInfo atLayerNumber:(int)layernum forEventType:(vnrWindowInfoEventType)event atTimestamp:(NSTimeInterval)time andAllWindows:(NSArray*)allWindows{
+-(id)initWith:(VnrWindowInfo*)windowInfo
+atLayerNumber:(int)layernum
+ forEventType:(vnrWindowInfoEventType)event
+  atTimestamp:(NSTimeInterval)time
+      atClock:(uint64)clock
+andAllWindows:(NSArray*)allWindows
+{
     self = [super init];
     if(self){
         self.windowInfo = windowInfo;
         self.layerNumber=layernum;
         self.eventType = event;
         self.timestamp = time;
+        self.clock = clock;
         self.windows = allWindows;
     }
     return self;

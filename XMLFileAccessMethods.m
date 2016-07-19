@@ -10,6 +10,8 @@
 #import "UIElementUtilities.h"
 #import "UIElementUtilitiesAdditions.h"
 
+#include "platform.h"
+
 @implementation XMLFileAccessMethods{
     NSXMLDocument* xmldoc;
     NSString* filePath;
@@ -131,11 +133,16 @@
  @return BOOL YES if all went well
  */
 
--(BOOL)writeChangeApp:(NSString*)appname atTime:(NSTimeInterval)time{
+-(BOOL)writeChangeApp:(NSString*)appname
+               atTime:(NSTimeInterval)time
+              atClock:(uint64)clock{
     if(xmldoc){
         NSXMLElement *xmlElement = [[NSXMLElement alloc] initWithName:@"appchange"];
         [xmlElement addAttribute:[NSXMLNode attributeWithName:@"name" stringValue:appname]];
         [xmlElement addAttribute:[NSXMLNode attributeWithName:@"time" stringValue:[NSString stringWithFormat:@"%f",time]]];
+        [xmlElement addAttribute:[NSXMLNode attributeWithName:@"clock" stringValue:[NSString stringWithFormat:@"%" PRIu64,clock]]];
+        uint64 _clock = os_gettime_ns();
+        [xmlElement addAttribute:[NSXMLNode attributeWithName:@"took" stringValue:[NSString stringWithFormat:@"%" PRIu64,_clock-clock]]];
         [[xmldoc rootElement] addChild:xmlElement];
         NSData *xmlData = [xmldoc XMLDataWithOptions:NSXMLNodePrettyPrint];
         if ([xmlData writeToFile:filePath atomically:YES]) {
@@ -215,12 +222,19 @@ return NO;
  @param children NSXMLElement of the selected element and all its children
  @return a NSXMLElement corresponding to the XML description of a AXUIelementRef at a given location and all its parents
  */
--(NSXMLElement*)createXMLElementForMouseType:(int)mouseType withModifiers:(unsigned long)modifiers andAXUIElements:(NSArray*)array andChildren:(NSXMLElement*)children andSiblings:(NSArray*)siblings atTime:(NSTimeInterval)time{
+-(NSXMLElement*)createXMLElementForMouseType:(int)mouseType
+                               withModifiers:(unsigned long)modifiers
+                             andAXUIElements:(NSArray*)array
+                                 andChildren:(NSXMLElement*)children
+                                 andSiblings:(NSArray*)siblings
+                                      atTime:(NSTimeInterval)time
+                                     atClock:(uint64)clock{
     
     NSXMLElement *xmlElement = [[NSXMLElement alloc] initWithName:@"mouse"];
     [xmlElement addAttribute:[NSXMLNode attributeWithName:@"type" stringValue:[NSString stringWithFormat:@"%d",mouseType]]];
     [xmlElement addAttribute:[NSXMLNode attributeWithName:@"mod" stringValue:[NSString stringWithFormat:@"%lu",modifiers]]];
     [xmlElement addAttribute:[NSXMLNode attributeWithName:@"time" stringValue:[NSString stringWithFormat:@"%f",time]]];
+    [xmlElement addAttribute:[NSXMLNode attributeWithName:@"clock" stringValue:[NSString stringWithFormat:@"%" PRIu64,clock]]];
     NSXMLElement* lastchild=xmlElement;
     if(array){
         for(int i=0; i<array.count;i++){
@@ -239,7 +253,8 @@ return NO;
             lastchild = newElement;
         }
     }
-    
+    uint64 _clock = os_gettime_ns();
+    [xmlElement addAttribute:[NSXMLNode attributeWithName:@"took" stringValue:[NSString stringWithFormat:@"%" PRIu64,_clock-clock]]];
     return xmlElement;
     
 }
@@ -266,6 +281,7 @@ return NO;
     NSXMLElement *xmlElement = [[NSXMLElement alloc] initWithName:@"windowEvent"];
     [xmlElement addAttribute:[NSXMLNode attributeWithName:@"type" stringValue:[NSString stringWithFormat:@"%d",[event eventType]]]];
     [xmlElement addAttribute:[NSXMLNode attributeWithName:@"time" stringValue:[NSString stringWithFormat:@"%f",[event timestamp]]]];
+    [xmlElement addAttribute:[NSXMLNode attributeWithName:@"clock" stringValue:[NSString stringWithFormat:@"%" PRIu64,[event clock]]]];
     NSXMLElement *eventWindow = [[NSXMLElement alloc] initWithName:@"target"];
     [self addAttributeToXMLElement:eventWindow forVnrWindow:[event windowInfo]];
     [xmlElement addChild:eventWindow];
@@ -277,7 +293,8 @@ return NO;
         [allWindows addChild:windxml];
     }
     [xmlElement addChild:allWindows];
-    
+    uint64 _clock = os_gettime_ns();
+    [xmlElement addAttribute:[NSXMLNode attributeWithName:@"took" stringValue:[NSString stringWithFormat:@"%" PRIu64,_clock-[event clock]]]];
     return xmlElement;
 }
 
@@ -292,8 +309,13 @@ return NO;
     [element  addAttribute:[NSXMLNode attributeWithName:@"h" stringValue:[NSString stringWithFormat:@"%.0f",windowInfo.frame.size.height]]];
 }
 
--(BOOL)addXMLElementToFileForMouseType:(int)mouseType withModifiers:(unsigned long)modifiers andAXUIElements:(NSArray*)array atTime:(NSTimeInterval)time{
-    NSXMLElement* element = [self createXMLElementForMouseType:mouseType withModifiers:modifiers andAXUIElements:array atTime:time];
+-(BOOL)addXMLElementToFileForMouseType:(int)mouseType
+                         withModifiers:(unsigned long)modifiers
+                       andAXUIElements:(NSArray*)array
+                                atTime:(NSTimeInterval)time
+                               atClock:(uint64)clock
+{
+    NSXMLElement* element = [self createXMLElementForMouseType:mouseType withModifiers:modifiers andAXUIElements:array atTime:time atClock:clock];
     return [self addXMLElementToRoot:element];
 }
 
@@ -308,8 +330,15 @@ return NO;
  @param children NSXMLElement of the selected element and all its children
  @return a YES if everything went ok
 */
--(BOOL)addXMLElementToFileForMouseType:(int)mouseType withModifiers:(unsigned long)modifiers andAXUIElements:(NSArray*)array andChildren:(NSXMLElement*)children andSiblings:(NSArray*)siblings atTime:(NSTimeInterval)time{
-    NSXMLElement* element = [self createXMLElementForMouseType:mouseType withModifiers:modifiers andAXUIElements:array andChildren:children andSiblings:siblings atTime:time];
+-(BOOL)addXMLElementToFileForMouseType:(int)mouseType
+                         withModifiers:(unsigned long)modifiers
+                       andAXUIElements:(NSArray*)array
+                           andChildren:(NSXMLElement*)children
+                           andSiblings:(NSArray*)siblings
+                                atTime:(NSTimeInterval)time
+                               atClock:(uint64)clock
+{
+    NSXMLElement* element = [self createXMLElementForMouseType:mouseType withModifiers:modifiers andAXUIElements:array andChildren:children andSiblings:siblings atTime:time atClock:clock];
     return [self addXMLElementToRoot:element];
 }
 
@@ -320,8 +349,11 @@ return NO;
  @param children NSXMLElement of the selected element and all its children
  @return a YES if everything went ok
  */
--(BOOL)addXMLElementToFileForApplication:(NSXMLElement*)children atTime:(NSTimeInterval)time{
-    NSXMLElement* element = [self createXMLElementForApplication:children atTime:time];
+-(BOOL)addXMLElementToFileForApplication:(NSXMLElement*)children
+                                  atTime:(NSTimeInterval)time
+                                 atClock:(uint64)clock
+{
+    NSXMLElement* element = [self createXMLElementForApplication:children atTime:time atClock:clock];
     return [self addXMLElementToRoot:element];
 }
 
@@ -331,12 +363,17 @@ return NO;
  @param array NSArray of all the AXUIElementRef
  @return a NSXMLElement corresponding to the XML description of a AXUIelementRef at a given location and all its parents
  */
--(NSXMLElement*)createXMLElementForApplication:(NSXMLElement*)children atTime:(NSTimeInterval)time{
-    
+-(NSXMLElement*)createXMLElementForApplication:(NSXMLElement*)children
+                                        atTime:(NSTimeInterval)time
+                                       atClock:(uint64)clock
+{
     NSXMLElement *xmlElement = [[NSXMLElement alloc] initWithName:@"application"];
     [xmlElement addAttribute:[NSXMLNode attributeWithName:@"time" stringValue:[NSString stringWithFormat:@"%f",time]]];
+    [xmlElement addAttribute:[NSXMLNode attributeWithName:@"clock" stringValue:[NSString stringWithFormat:@"%" PRIu64,clock]]];
     NSXMLElement* lastchild=xmlElement;
     [lastchild addChild:children];
+    uint64 _clock = os_gettime_ns();
+    [xmlElement addAttribute:[NSXMLNode attributeWithName:@"took" stringValue:[NSString stringWithFormat:@"%" PRIu64,_clock-clock]]];
     return xmlElement;
     
 }
@@ -345,7 +382,9 @@ return NO;
  @param AXUIElementRef the focused element
  @return a XMLElement of all children of this element
  */
--(NSXMLElement*)xmlDescriptionOfChildrenOfElement:(AXUIElementRef)element beingSelected:(BOOL)select{
+-(NSXMLElement*)xmlDescriptionOfChildrenOfElement:(AXUIElementRef)element
+                                    beingSelected:(BOOL)select
+{
     NSXMLElement* xmlElement = [XMLFileAccessMethods XMLElementforAXElement:element];
     if(select){
         [xmlElement addAttribute:[NSXMLNode attributeWithName:@"selected" stringValue:@"YES"]];
@@ -409,12 +448,17 @@ return NO;
  @return a NSXMLElement corresponding to the XML description of a AXUIelementRef at a given location and all its parents
  @warning likely to be obsolete
  */
--(NSXMLElement*)createXMLElementForMouseType:(int)mouseType withModifiers:(unsigned long)modifiers andAXUIElements:(NSArray*)array atTime:(NSTimeInterval)time{
-    
+-(NSXMLElement*)createXMLElementForMouseType:(int)mouseType
+                               withModifiers:(unsigned long)modifiers
+                             andAXUIElements:(NSArray*)array
+                                      atTime:(NSTimeInterval)time
+                                     atClock:(uint64)clock
+{
     NSXMLElement *xmlElement = [[NSXMLElement alloc] initWithName:@"mouse"];
     [xmlElement addAttribute:[NSXMLNode attributeWithName:@"type" stringValue:[NSString stringWithFormat:@"%d",mouseType]]];
     [xmlElement addAttribute:[NSXMLNode attributeWithName:@"mod" stringValue:[NSString stringWithFormat:@"%lu",modifiers]]];
     [xmlElement addAttribute:[NSXMLNode attributeWithName:@"time" stringValue:[NSString stringWithFormat:@"%f",time]]];
+    [xmlElement addAttribute:[NSXMLNode attributeWithName:@"clock" stringValue:[NSString stringWithFormat:@"%" PRIu64,clock]]];
     NSXMLElement* lastchild=xmlElement;
     if(array){
         for(int i=0; i<array.count;i++){
@@ -425,6 +469,8 @@ return NO;
             lastchild = newElement;
         }
     }
+    uint64 _clock = os_gettime_ns();
+    [xmlElement addAttribute:[NSXMLNode attributeWithName:@"took" stringValue:[NSString stringWithFormat:@"%" PRIu64,_clock-clock]]];
     return xmlElement;
     
 }

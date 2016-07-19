@@ -10,6 +10,7 @@
 #import "WindowInfoEvent.h"
 #import "WindowGrabber.h"
 #import "VnrWindowInfo.h"
+#include "platform.h"
 
 @implementation WindowTracker{
     NSArray* windowsInfoArray;
@@ -56,6 +57,8 @@
 
 # pragma mark called periodically to check wether or not events should be fired
 -(void)updateMyWindows{
+    uint64 clock = os_gettime_ns();
+    
     NSArray* newWindowsInfoArray = [WindowGrabber getWindowList];
     
     NSTimeInterval time = [[NSDate date] timeIntervalSince1970];
@@ -63,7 +66,7 @@
     if([newWindowsInfoArray count]<[windowsInfoArray count]){
         // here window(s) closed
         // find windows that are gone and send events
-        NSArray* disposedWindowsEvents = [WindowTracker getDisposedWindowsBetween:newWindowsInfoArray and:windowsInfoArray atTime:time];
+        NSArray* disposedWindowsEvents = [WindowTracker getDisposedWindowsBetween:newWindowsInfoArray and:windowsInfoArray atTime:time atClock:clock];
         for(WindowInfoEvent* event in disposedWindowsEvents){
             if([self.windowTrackerDelegate respondsToSelector:@selector(windowInfoEventHappened:)]){
                 [self.windowTrackerDelegate windowInfoEventHappened:event];
@@ -74,7 +77,7 @@
     else if([newWindowsInfoArray count]>[windowsInfoArray count]){
         // here window(s) opened
         // find windows that are gone and send events
-        NSArray* openedWindowsEvents = [WindowTracker getOpenedWindowsBetween:newWindowsInfoArray and:windowsInfoArray atTime:time];
+        NSArray* openedWindowsEvents = [WindowTracker getOpenedWindowsBetween:newWindowsInfoArray and:windowsInfoArray atTime:time atClock:clock];
         for(WindowInfoEvent* event in openedWindowsEvents){
             if([self.windowTrackerDelegate respondsToSelector:@selector(windowInfoEventHappened:)]){
                 [self.windowTrackerDelegate windowInfoEventHappened:event];
@@ -85,7 +88,7 @@
     else {
         //  test if order of windows has changed
         // if yes, window(s)reordered
-        NSArray* reorderedSnaps =[WindowTracker orderDiffersBetween:newWindowsInfoArray and:windowsInfoArray atTime:time];
+        NSArray* reorderedSnaps =[WindowTracker orderDiffersBetween:newWindowsInfoArray and:windowsInfoArray atTime:time atClock:clock];
         
         if([reorderedSnaps count]>0){
             for (WindowInfoEvent *event in reorderedSnaps){
@@ -100,7 +103,7 @@
             
             // test if position of a window has changed
             // if yes, window is currently moving. Wait for stable position or write everything????
-            WindowInfoEvent * movingWindow = [WindowTracker getIDofMovingWindowBetween:newWindowsInfoArray and:windowsInfoArray atTime:time];
+            WindowInfoEvent * movingWindow = [WindowTracker getIDofMovingWindowBetween:newWindowsInfoArray and:windowsInfoArray atTime:time atClock:clock];
             if(movingWindow){
                 if([self.windowTrackerDelegate respondsToSelector:@selector(windowInfoEventHappened:)]){
                     [self.windowTrackerDelegate windowInfoEventHappened:movingWindow];
@@ -109,7 +112,7 @@
             }
             
             
-            WindowInfoEvent * resizedWindow = [WindowTracker getIDofResizedWindowBetween:newWindowsInfoArray and:windowsInfoArray atTime:time];
+            WindowInfoEvent * resizedWindow = [WindowTracker getIDofResizedWindowBetween:newWindowsInfoArray and:windowsInfoArray atTime:time atClock:clock];
             if(resizedWindow){
                 if([self.windowTrackerDelegate respondsToSelector:@selector(windowInfoEventHappened:)]){
                     [self.windowTrackerDelegate windowInfoEventHappened:resizedWindow];
@@ -134,7 +137,11 @@
 
 // Method that returns an array of AYWindowSnapshot that are contained in one array but not in the other
 // if no winwow was found, return nil
-+(NSArray*)getDisposedWindowsBetween:(NSArray*)newWindowsInfos and:(NSArray*)oldWindowsInfos atTime:(NSTimeInterval)time{
++(NSArray*)getDisposedWindowsBetween:(NSArray*)newWindowsInfos
+                                 and:(NSArray*)oldWindowsInfos
+                              atTime:(NSTimeInterval)time
+                             atClock:(uint64)clock
+{
     NSMutableArray* result = [NSMutableArray array];
     for (int i=0; i<[oldWindowsInfos count];i++) {
         VnrWindowInfo *info1 = [oldWindowsInfos objectAtIndex:i];
@@ -146,7 +153,7 @@
             }
         }
         if(!contains){
-            WindowInfoEvent* event = [[WindowInfoEvent alloc] initWith:info1 atLayerNumber:i forEventType:vnrWindowDisappeared atTimestamp:time andAllWindows:newWindowsInfos];
+            WindowInfoEvent* event = [[WindowInfoEvent alloc] initWith:info1 atLayerNumber:i forEventType:vnrWindowDisappeared atTimestamp:time atClock:clock andAllWindows:newWindowsInfos];
             [result addObject:event];
         }
     }
@@ -160,7 +167,11 @@
 
 // Method that returns an array of AYWindowSnapshot that are contained in one array but not in the other
 // if no winwow was found, return nil
-+(NSArray*)getOpenedWindowsBetween:(NSArray*)newWindowsInfos and:(NSArray*)oldWindowsInfos atTime:(NSTimeInterval)time{
++(NSArray*)getOpenedWindowsBetween:(NSArray*)newWindowsInfos
+                               and:(NSArray*)oldWindowsInfos
+                            atTime:(NSTimeInterval)time
+                           atClock:(uint64)clock
+{
     NSMutableArray* result = [NSMutableArray array];
     for (int i=0; i<[oldWindowsInfos count];i++) {
         VnrWindowInfo *info1 = [newWindowsInfos objectAtIndex:i];
@@ -172,7 +183,7 @@
             }
         }
         if(!contains){
-            WindowInfoEvent* event = [[WindowInfoEvent alloc] initWith:info1 atLayerNumber:i forEventType:vnrWindowAppeared atTimestamp:time andAllWindows:newWindowsInfos];
+            WindowInfoEvent* event = [[WindowInfoEvent alloc] initWith:info1 atLayerNumber:i forEventType:vnrWindowAppeared atTimestamp:time atClock:clock andAllWindows:newWindowsInfos];
             [result addObject:event];
         }
     }
@@ -191,7 +202,11 @@
 // and windows not reordered
 // returns 0 if no window moving
 // return the id of the moving window otherwise
-+(WindowInfoEvent* )getIDofMovingWindowBetween:(NSArray*)newArray and:(NSArray*)previousArray atTime:(NSTimeInterval)time{
++(WindowInfoEvent* )getIDofMovingWindowBetween:(NSArray*)newArray
+                                           and:(NSArray*)previousArray
+                                        atTime:(NSTimeInterval)time
+                                       atClock:(uint64)clock
+{
     NSInteger nbNew = [newArray count];
     for(int i=0; i <nbNew;i++){
         VnrWindowInfo* info1 =[newArray objectAtIndex:i];
@@ -200,7 +215,7 @@
         CGPoint location1 =[info1 frame].origin;
         CGPoint location2 =[info2 frame].origin;
                 if((location1.x!=location2.x)||(location1.y!=location2.y)){
-            WindowInfoEvent* event = [[WindowInfoEvent alloc] initWith:[newArray objectAtIndex:i] atLayerNumber:i forEventType:vnrWindowMoved atTimestamp:time andAllWindows:newArray];
+            WindowInfoEvent* event = [[WindowInfoEvent alloc] initWith:[newArray objectAtIndex:i] atLayerNumber:i forEventType:vnrWindowMoved atTimestamp:time atClock:clock andAllWindows:newArray];
             return event ;
         }
     }
@@ -212,14 +227,18 @@
 // and windows not reordered
 // returns 0 if no window moving
 // return the id of the moving window otherwise
-+(WindowInfoEvent*)getIDofResizedWindowBetween:(NSArray*)newArray and:(NSArray*)previousArray atTime:(NSTimeInterval)time{
++(WindowInfoEvent*)getIDofResizedWindowBetween:(NSArray*)newArray
+                                           and:(NSArray*)previousArray
+                                        atTime:(NSTimeInterval)time
+                                       atClock:(uint64)clock
+{
     NSInteger nbNew = [newArray count];
     for(int i=0; i <nbNew;i++){
         CGSize size1 =[((VnrWindowInfo *)[newArray objectAtIndex:i]) frame].size;
         CGSize size2 =[((VnrWindowInfo *)[previousArray objectAtIndex:i]) frame].size;
         
         if((size1.height!=size2.height)||(size1.width!=size2.width)){
-            WindowInfoEvent* event = [[WindowInfoEvent alloc] initWith:[newArray objectAtIndex:i] atLayerNumber:i forEventType:vnrWindowResized atTimestamp:time andAllWindows:newArray];
+            WindowInfoEvent* event = [[WindowInfoEvent alloc] initWith:[newArray objectAtIndex:i] atLayerNumber:i forEventType:vnrWindowResized atTimestamp:time atClock:clock andAllWindows:newArray];
             return event ;
         }
     }
@@ -240,7 +259,11 @@
  */
 
 
-+(NSArray*)orderDiffersBetween:(NSArray*)newArray and:(NSArray*)previousArray atTime:(NSTimeInterval)time{
++(NSArray*)orderDiffersBetween:(NSArray*)newArray
+                           and:(NSArray*)previousArray
+                        atTime:(NSTimeInterval)time
+                       atClock:(uint64)clock
+{
     NSInteger nbNew = [newArray count];
     NSInteger nbPrevious = [previousArray count];
     NSMutableArray* reorderedSnapsList = [NSMutableArray array];
@@ -264,7 +287,7 @@
             for(NSNumber* numberId in reorderedWindowId){
                 
                 if(((int)[wInfo windowID])==[numberId intValue]){
-                    WindowInfoEvent* event = [[WindowInfoEvent alloc] initWith:wInfo atLayerNumber:i forEventType:vnrWindowReordered atTimestamp:time andAllWindows:newArray];
+                    WindowInfoEvent* event = [[WindowInfoEvent alloc] initWith:wInfo atLayerNumber:i forEventType:vnrWindowReordered atTimestamp:time atClock:clock andAllWindows:newArray];
                     [reorderedSnapsList addObject:event];
                     break;
                 }

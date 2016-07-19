@@ -13,6 +13,7 @@
 #import <AppKit/AppKit.h>
 
 #include <sys/time.h>
+#include "platform.h"
 
 @implementation AXAll{
     pid_t current_pid;
@@ -55,6 +56,8 @@ static AXUIElementRef systemWideElement;
 
 -(void)processTimerForAX{
     if(current_pid!=0){
+        uint64 clock = os_gettime_ns();
+        
         // Get the local system time in UTC.
         gettimeofday(&system_time, NULL);
         
@@ -63,7 +66,7 @@ static AXUIElementRef systemWideElement;
 
         AXUIElementRef app_element = AXUIElementCreateApplication(current_pid);
         NSXMLElement* children = [self getXMLDescriptionOfElementAndChildren:app_element];
-        [self.xmlFileAccess addXMLElementToFileForApplication:children atTime:time];
+        [self.xmlFileAccess addXMLElementToFileForApplication:children atTime:time atClock:clock];
     }
     //
 }
@@ -137,6 +140,8 @@ static struct timeval system_time;
  */
 //TODO: check how modifiers are handled
 -(void)handleEvent:(NSEvent*)event{
+    uint64 clock = os_gettime_ns();
+    
     // Get the local system time in UTC.
     gettimeofday(&system_time, NULL);
     
@@ -156,7 +161,7 @@ static struct timeval system_time;
     
     NSXMLElement* children = [self getXMLDescriptionOfElementAndChildren:element];
 
-    [self.xmlFileAccess addXMLElementToFileForMouseType:(int)[event type] withModifiers:[event modifierFlags] andAXUIElements:array andChildren:children andSiblings:siblings atTime:time];
+    [self.xmlFileAccess addXMLElementToFileForMouseType:(int)[event type] withModifiers:[event modifierFlags] andAXUIElements:array andChildren:children andSiblings:siblings atTime:time atClock:clock];
 }
 
 
