@@ -2,6 +2,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12 FATAL_ERROR)
 project(AXAll)
 set(LIBNAME "libax")
 set(GUIAPPNAME "AXAll")
+set(CLIAPPNAME "AXCLI")
+
+## LIB
 
 set(${LIBNAME}_HDRS 
 	AXAll.h
@@ -58,6 +61,8 @@ PROPERTIES COMPILE_FLAGS "-fobjc-arc")
 
 add_library(${LIBNAME} ${${LIBNAME}_HDRS} ${${LIBNAME}_SRCS})
 
+## GUI APP
+
 set(${GUIAPPNAME}_HDRS 
 	AppDelegate.h
 	TableController.h
@@ -108,3 +113,25 @@ add_custom_command (TARGET ${GUIAPPNAME} POST_BUILD
                       COMMAND ${IBTOOL} --errors --warnings --notices --output-format human-readable-text --compile ${CMAKE_BINARY_DIR}/${GUIAPPNAME}.app/Contents/Resources/${MACOSX_BUNDLE_NSMAIN_NIB_FILE}.nib ${CMAKE_SOURCE_DIR}/Base.lproj/${MACOSX_BUNDLE_NSMAIN_NIB_FILE}.xib
                       COMMENT "Compiling ${CMAKE_SOURCE_DIR}/Base.lproj/${MACOSX_BUNDLE_NSMAIN_NIB_FILE}.xib"
 )
+
+## CLI
+
+set(${CLIAPPNAME}_HDRS 
+	ConsoleController.h
+)
+
+set(${CLIAPPNAME}_SRCS 
+	ConsoleController.m
+	ConsoleMain.m
+)
+
+# From vtk/Examples/GUI/Cocoa/CMakeLists.txt
+# Build all Objective-C as ARC.
+# Otherwise with Xcode 7.3: "error: cannot synthesize weak property in file using manual reference counting"
+set_source_files_properties( 
+	ConsoleController.m
+	ConsoleController.m
+PROPERTIES COMPILE_FLAGS "-fobjc-arc")
+
+add_executable(${CLIAPPNAME} ${${CLIAPPNAME}_HDRS} ${${CLIAPPNAME}_SRCS})
+target_link_libraries(${CLIAPPNAME} ${LIBNAME} "-framework Cocoa")
