@@ -1,13 +1,13 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12 FATAL_ERROR)
-project(AXAll)
-set(LIBNAME "libax")
-set(GUIAPPNAME "AXAll")
-set(CLIAPPNAME "AXCLI")
+project(AXRecord)
+set(LIBNAME "libAXRecord")
+set(GUIAPPNAME "AXRecordGUI")
+set(CLIAPPNAME "AXRecordCLI")
 
 ## LIB
 
 set(${LIBNAME}_HDRS 
-	AXAll.h
+	AXRecord.h
 	AXSelectedArray.h
 	AppLogger.h
 	AppTracker.h
@@ -22,7 +22,7 @@ set(${LIBNAME}_HDRS
 )
 
 set(${LIBNAME}_SRCS 
-	AXAll.m
+	AXRecord.m
 	AXSelectedArray.m
 	AppLogger.m
 	AppTracker.m
@@ -46,7 +46,7 @@ set(${LIBNAME}_SRCS
 # + error: cast of an indirect pointer to an Objective-C pointer (...) is disallowed with ARC
 # + error: 'autorelease' is unavailable: not available in automatic reference counting mode
 set_source_files_properties( 
-	AXAll.m
+	AXRecord.m
 	AXSelectedArray.m
 	AppLogger.m
 	AppTracker.m
@@ -84,7 +84,7 @@ set_source_files_properties(
 PROPERTIES COMPILE_FLAGS "-fobjc-arc")
 
 # From vtk/Examples/GUI/Cocoa/CMakeLists.txt 
-set(MACOSX_BUNDLE_GUI_IDENTIFIER "fr.inria.lille.mjolnir.malacria.AXAll")
+set(MACOSX_BUNDLE_GUI_IDENTIFIER "fr.inria.lille.mjolnir.malacria.AXRecord")
 set(MACOSX_BUNDLE_BUNDLE_NAME ${GUIAPPNAME})
 set(MACOSX_BUNDLE_NSMAIN_NIB_FILE "MainMenu")
 set(MACOSX_BUNDLE_NSPRINCIPAL_CLASS "NSApplication")

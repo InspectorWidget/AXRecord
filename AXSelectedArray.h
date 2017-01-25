@@ -1,6 +1,6 @@
 //
 //  AXSelectedArray.h
-//  AXAll
+//  AXRecord
 //
 //  Created by Sylvain Malacria on 04/03/16.
 //  Copyright © 2016 Sylvain Malacria. All rights reserved.

@@ -1,6 +1,6 @@
 //
 //  XMLFileAccessMethods.m
-//  AXAll
+//  AXRecord
 //
 //  Created by Sylvain Malacria on 03/03/16.
 //  Copyright © 2016 Sylvain Malacria. All rights reserved.

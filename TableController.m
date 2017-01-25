@@ -1,18 +1,18 @@
 //
 //  TableController.m
-//  AXAll
+//  AXRecord
 //
 //  Created by Sylvain Malacria on 15/02/16.
 //  Copyright © 2016 Sylvain Malacria. All rights reserved.
 //
 
 #import "TableController.h"
-#import "AXAll.h"
+#import "AXRecord.h"
 #import "AppTracker.h"
 #import "WindowGrabber.h"
 
 @implementation TableController{
-    AXAll* axAll;
+    AXRecord* axAll;
     WindowTracker* windowTracker;
     AppTracker* appTracker;
     XMLFileAccessMethods* xmlFileAccess;
@@ -27,7 +27,7 @@
         [self refresh];
         xmlFileAccess = [XMLFileAccessMethods new];
         
-        axAll = [[AXAll alloc] initWithXMLFileAccess:xmlFileAccess];
+        axAll = [[AXRecord alloc] initWithXMLFileAccess:xmlFileAccess];
         
         windowTracker = [[WindowTracker alloc] initWithDelay:0.2 andXMLFileAccess:xmlFileAccess];
         [windowTracker setWindowTrackerDelegate:self];

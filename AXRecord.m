@@ -1,12 +1,12 @@
 //
-//  AXAll.m
-//  AXAll
+//  AXRecord.m
+//  AXRecord
 //
 //  Created by Sylvain Malacria on 02/02/16.
 //  Copyright © 2016 Sylvain Malacria. All rights reserved.
 //
 
-#import "AXAll.h"
+#import "AXRecord.h"
 #import "UIElementUtilities.h"
 #import "UIElementUtilitiesAdditions.h"
 #import "XMLFileAccessMethods.h"
@@ -15,7 +15,7 @@
 #include <sys/time.h>
 #include "platform.h"
 
-@implementation AXAll{
+@implementation AXRecord{
     pid_t current_pid;
     
  }

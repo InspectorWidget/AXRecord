@@ -1,6 +1,6 @@
 //
 //  ConsoleController.m
-//  AXAll
+//  AXRecord
 //
 //  Created by Christian Frisson on 24/01/17.
 //  Forked from TableController.m
@@ -8,12 +8,12 @@
 //
 
 #import "ConsoleController.h"
-#import "AXAll.h"
+#import "AXRecord.h"
 #import "AppTracker.h"
 #import "WindowGrabber.h"
 
 @implementation ConsoleController{
-    AXAll* axAll;
+    AXRecord* axAll;
     WindowTracker* windowTracker;
     AppTracker* appTracker;
     XMLFileAccessMethods* xmlFileAccess;
@@ -27,7 +27,7 @@
     if(self){
         xmlFileAccess = [XMLFileAccessMethods new];
         
-        axAll = [[AXAll alloc] initWithXMLFileAccess:xmlFileAccess];
+        axAll = [[AXRecord alloc] initWithXMLFileAccess:xmlFileAccess];
         
         windowTracker = [[WindowTracker alloc] initWithDelay:0.2 andXMLFileAccess:xmlFileAccess];
         [windowTracker setWindowTrackerDelegate:self];

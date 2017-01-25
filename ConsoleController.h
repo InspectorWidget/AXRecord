@@ -1,6 +1,6 @@
 //
 //  ConsoleController.m
-//  AXAll
+//  AXRecord
 //
 //  Created by Christian Frisson on 24/01/17.
 //  Forked from TableController.m

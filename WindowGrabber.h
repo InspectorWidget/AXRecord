@@ -1,6 +1,6 @@
 //
 //  WindowGrabber.h
-//  AXAll
+//  AXRecord
 //
 //  Created by Sylvain Malacria on 11/03/16.
 //  Copyright © 2016 Sylvain Malacria. All rights reserved.

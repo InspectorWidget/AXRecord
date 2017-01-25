@@ -1,6 +1,6 @@
 //
 //  main.m
-//  AXAll
+//  AXRecord
 //
 //  Created by Sylvain Malacria on 02/02/16.
 //  Copyright © 2016 Sylvain Malacria. All rights reserved.

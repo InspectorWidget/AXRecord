@@ -1,6 +1,6 @@
 //
 //  TableController.h
-//  AXAll
+//  AXRecord
 //
 //  Created by Sylvain Malacria on 15/02/16.
 //  Copyright © 2016 Sylvain Malacria. All rights reserved.
