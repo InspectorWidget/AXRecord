@@ -64,7 +64,8 @@ PROPERTIES COMPILE_FLAGS "-fobjc-arc")
 add_library(${LIBNAME} ${${LIBNAME}_HDRS} ${${LIBNAME}_SRCS})
 
 ## GUI APP
-
+option(BUILD_GUI "Build GUI app" ON)
+if(BUILD_GUI)
 set(${GUIAPPNAME}_HDRS 
 	AppDelegate.h
 	TableController.h
@@ -116,7 +117,10 @@ add_custom_command (TARGET ${GUIAPPNAME} POST_BUILD
                       COMMENT "Compiling ${CMAKE_CURRENT_SOURCE_DIR}/Base.lproj/${MACOSX_BUNDLE_NSMAIN_NIB_FILE}.xib"
 )
 
+endif(BUILD_GUI)
 ## CLI
+option(BUILD_CLI "Build GUI app" ON)
+if(BUILD_CLI)
 
 set(${CLIAPPNAME}_HDRS 
 	ConsoleController.h
@@ -137,3 +141,4 @@ PROPERTIES COMPILE_FLAGS "-fobjc-arc")
 
 add_executable(${CLIAPPNAME} ${${CLIAPPNAME}_HDRS} ${${CLIAPPNAME}_SRCS})
 target_link_libraries(${CLIAPPNAME} ${LIBNAME} "-framework Cocoa")
+endif(BUILD_CLI)
