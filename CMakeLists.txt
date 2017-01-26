@@ -4,6 +4,8 @@ set(LIBNAME "libAXRecord")
 set(GUIAPPNAME "AXRecordGUI")
 set(CLIAPPNAME "AXRecordCLI")
 
+message("AXRecord")
+
 ## LIB
 
 set(${LIBNAME}_HDRS 
@@ -95,7 +97,7 @@ target_link_libraries(${GUIAPPNAME} ${LIBNAME} "-framework Cocoa")
 
 # From vtk/Examples/GUI/Cocoa/CMakeLists.txt 
 # Set a custom plist file for the app bundle
-set_target_properties(${GUIAPPNAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/Info-CMake.plist)
+set_target_properties(${GUIAPPNAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info-CMake.plist)
 
 # Make sure we can find the 'ibtool' program. If we can NOT find it we
 # skip generation of this project
@@ -106,12 +108,12 @@ endif()
 
 # Make sure the 'Resources' Directory is correctly created before we build
 add_custom_command (TARGET ${GUIAPPNAME} PRE_BUILD
-                      COMMAND mkdir -p ${CMAKE_BINARY_DIR}/${GUIAPPNAME}.app/Contents/Resources)
+                      COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/${GUIAPPNAME}.app/Contents/Resources)
 
 # Compile the .xib files using the 'ibtool' program with the destination being the app package
 add_custom_command (TARGET ${GUIAPPNAME} POST_BUILD
-                      COMMAND ${IBTOOL} --errors --warnings --notices --output-format human-readable-text --compile ${CMAKE_BINARY_DIR}/${GUIAPPNAME}.app/Contents/Resources/${MACOSX_BUNDLE_NSMAIN_NIB_FILE}.nib ${CMAKE_SOURCE_DIR}/Base.lproj/${MACOSX_BUNDLE_NSMAIN_NIB_FILE}.xib
-                      COMMENT "Compiling ${CMAKE_SOURCE_DIR}/Base.lproj/${MACOSX_BUNDLE_NSMAIN_NIB_FILE}.xib"
+                      COMMAND ${IBTOOL} --errors --warnings --notices --output-format human-readable-text --compile ${CMAKE_CURRENT_BINARY_DIR}/${GUIAPPNAME}.app/Contents/Resources/${MACOSX_BUNDLE_NSMAIN_NIB_FILE}.nib ${CMAKE_CURRENT_SOURCE_DIR}/Base.lproj/${MACOSX_BUNDLE_NSMAIN_NIB_FILE}.xib
+                      COMMENT "Compiling ${CMAKE_CURRENT_SOURCE_DIR}/Base.lproj/${MACOSX_BUNDLE_NSMAIN_NIB_FILE}.xib"
 )
 
 ## CLI
