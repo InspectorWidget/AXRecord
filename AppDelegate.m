@@ -7,11 +7,11 @@
 //
 
 #import "AppDelegate.h"
-#import "AXRecord.h"
+#import "AXElementTracker.h"
 
 
 @interface AppDelegate (){
-    AXRecord* all;
+    AXElementTracker* all;
 
 }
 

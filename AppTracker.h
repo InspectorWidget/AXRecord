@@ -17,4 +17,6 @@
 
 -(id)initWithXMLFileAccess:(XMLFileAccessMethods*)xml;
 
+-(void)stop;
+
 @end

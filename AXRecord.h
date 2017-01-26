@@ -2,21 +2,10 @@
 //  AXRecord.h
 //  AXRecord
 //
-//  Created by Sylvain Malacria on 02/02/16.
-//  Copyright © 2016 Sylvain Malacria. All rights reserved.
+//  Created by Christian Frisson on 26/01/17.
+//  Copyright © 2017 Christian Frisson and Sylvain Malacria. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "XMLFileAccessMethods.h"
+int start_ax(char* filename);
 
-@interface AXRecord : NSObject
-
-@property XMLFileAccessMethods* xmlFileAccess; // The xml document corresponding to all the events
-
--(id)initWithXMLFileAccess:(XMLFileAccessMethods*)xml;
-
-+(AXUIElementRef)systemWideElement;
-
-
-
-@end
+int stop_ax();

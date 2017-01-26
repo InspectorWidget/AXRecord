@@ -10,6 +10,7 @@ message("AXRecord")
 
 set(${LIBNAME}_HDRS 
 	AXRecord.h
+        AXElementTracker.h
 	AXSelectedArray.h
 	AppLogger.h
 	AppTracker.h
@@ -25,6 +26,7 @@ set(${LIBNAME}_HDRS
 
 set(${LIBNAME}_SRCS 
 	AXRecord.m
+        AXElementTracker.m
 	AXSelectedArray.m
 	AppLogger.m
 	AppTracker.m
@@ -49,6 +51,7 @@ set(${LIBNAME}_SRCS
 # + error: 'autorelease' is unavailable: not available in automatic reference counting mode
 set_source_files_properties( 
 	AXRecord.m
+	AXRecordController.m
 	AXSelectedArray.m
 	AppLogger.m
 	AppTracker.m

@@ -46,7 +46,9 @@
     [self.xmlFileAccess writeChangeApp:[activatedApp localizedName] atTime:time atClock:clock];
 }
 
-
+- (void)stop{
+    [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver: self];
+}
 
 
 @end

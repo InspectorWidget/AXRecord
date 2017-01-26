@@ -22,6 +22,7 @@
 
 @interface WindowTracker : NSObject
 
+@property NSTimer *timer;
 
 @property XMLFileAccessMethods* xmlFileAccess; // The xml document corresponding to all the events
 @property(nonatomic,assign)id<WindowTrackerDelegate> windowTrackerDelegate;
@@ -31,5 +32,7 @@
 +(NSArray*)getCurrentWindowsInfo;
 
 -(void)printWindows;
+
+-(void)stop;
 
 @end

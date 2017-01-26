@@ -11,6 +11,8 @@
 
 @interface XMLFileAccessMethods : NSObject
 
+-(id)initWithFilename:(NSString *)filename;
+
 -(BOOL)addXMLElementToFileForMouseType:(int)mouseType
                          withModifiers:(unsigned long)modifiers
                        andAXUIElements:(NSArray*)array
@@ -31,5 +33,7 @@
 -(BOOL)writeChangeApp:(NSString*)appname
                atTime:(NSTimeInterval)time
               atClock:(uint64)clock;
+
+-(void)close;
 
 @end

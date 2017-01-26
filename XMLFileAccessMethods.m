@@ -18,9 +18,6 @@
 }
 
 
-
-
-
 -(id)init{
     self = [super init];
     if(self){
@@ -30,7 +27,20 @@
     return self;
 }
 
-
+-(id)initWithFilename:(NSString *)filename
+{
+    self = [super init];
+    if(self){
+        if(filename==nil){
+            [self createFilePath];
+        }
+        else{
+            filePath = filename;
+        }
+        [self initXMLDoc];
+    }
+    return self;
+}
 
 -(void)initXMLDoc{
     if(xmldoc==nil){
@@ -773,7 +783,9 @@ return NO;
     return xmlelement;
 }
 
-
+- (void)close{
+    xmldoc = nil;
+}
 
 
 @end

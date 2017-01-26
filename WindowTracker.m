@@ -23,7 +23,9 @@
         NSLog(@"init windowTracker");
         windowsInfoArray = [WindowGrabber getWindowList];
         self.xmlFileAccess = xml;
-        [NSTimer scheduledTimerWithTimeInterval:delay target:self selector:@selector(processTimer) userInfo:nil repeats:YES];
+        if (!_timer) {
+            _timer = [NSTimer scheduledTimerWithTimeInterval:delay target:self selector:@selector(processTimer) userInfo:nil repeats:YES];
+        }
       
     }
     return self;
@@ -334,7 +336,12 @@
 
 
 
-
+- (void)stop{
+    if ([_timer isValid]) {
+            [_timer invalidate];
+    }
+    _timer = nil;
+}
 
 
 

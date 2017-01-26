@@ -7,12 +7,12 @@
 //
 
 #import "TableController.h"
-#import "AXRecord.h"
+#import "AXElementTracker.h"
 #import "AppTracker.h"
 #import "WindowGrabber.h"
 
 @implementation TableController{
-    AXRecord* axAll;
+    AXElementTracker* elementTracker;
     WindowTracker* windowTracker;
     AppTracker* appTracker;
     XMLFileAccessMethods* xmlFileAccess;
@@ -27,7 +27,7 @@
         [self refresh];
         xmlFileAccess = [XMLFileAccessMethods new];
         
-        axAll = [[AXRecord alloc] initWithXMLFileAccess:xmlFileAccess];
+        elementTracker = [[AXElementTracker alloc] initWithXMLFileAccess:xmlFileAccess];
         
         windowTracker = [[WindowTracker alloc] initWithDelay:0.2 andXMLFileAccess:xmlFileAccess];
         [windowTracker setWindowTrackerDelegate:self];
