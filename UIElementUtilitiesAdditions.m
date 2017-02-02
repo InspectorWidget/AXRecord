@@ -134,7 +134,8 @@
 +(BOOL)isRelevantRole:(NSString*)elementRole{
     BOOL result =NO;
     //TODO: complete this method with the actual relevant role
-    result = [elementRole containsString:@"Button"];
+    result = ([elementRole rangeOfString:@"Button"].length != 0);
+    //result = [elementRole containsString:@"Button"]; // requires OSX 10.10+
     result = [elementRole isEqualToString:@"Text"];
     result = [elementRole isEqualToString:@"AXButton"];
     result = [elementRole isEqualToString:@"AXButton"];
