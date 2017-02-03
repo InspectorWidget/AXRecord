@@ -19,12 +19,15 @@ WindowTracker* windowTracker;
 AppTracker* appTracker;
 XMLFileAccessMethods* xmlFileAccess;
 
-int start_ax(char* filename){
+int start_ax(char* filename, float elementTrackDelay, float windowTrackDelay){
 
     xmlFileAccess = [[XMLFileAccessMethods alloc] initWithFilename:[NSString stringWithUTF8String:filename]];
-    elementTracker = [[AXElementTracker alloc] initWithXMLFileAccess:xmlFileAccess];
-    windowTracker = [[WindowTracker alloc] initWithDelay:0.2 andXMLFileAccess:xmlFileAccess];
+    elementTracker = [[AXElementTracker alloc] initWithDelay:elementTrackDelay andXMLFileAccess:xmlFileAccess];
+    windowTracker = [[WindowTracker alloc] initWithDelay:windowTrackDelay andXMLFileAccess:xmlFileAccess];
     appTracker= [[AppTracker alloc] initWithXMLFileAccess:xmlFileAccess];
+
+    NSLog(@"elementTrackDelay %f",elementTrackDelay);
+    NSLog(@"windowTrackDelay %f",windowTrackDelay);
 
     return 0;
 }

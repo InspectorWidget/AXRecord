@@ -27,7 +27,7 @@
     if(self){
         xmlFileAccess = [XMLFileAccessMethods new];
         
-        elementTracker = [[AXElementTracker alloc] initWithXMLFileAccess:xmlFileAccess];
+        elementTracker = [[AXElementTracker alloc] initWithDelay:0.5 andXMLFileAccess:xmlFileAccess];
         
         windowTracker = [[WindowTracker alloc] initWithDelay:0.2 andXMLFileAccess:xmlFileAccess];
         [windowTracker setWindowTrackerDelegate:self];

@@ -23,7 +23,7 @@
 static AXUIElementRef systemWideElement;
 
 
--(id)initWithXMLFileAccess:(XMLFileAccessMethods*)xml{
+-(id)initWithDelay:(float)delay andXMLFileAccess:(XMLFileAccessMethods*)xml{
     self = [super init];
     if(self){
         current_pid=0;
@@ -31,7 +31,7 @@ static AXUIElementRef systemWideElement;
         self.xmlFileAccess = xml;
         [self registerGlobalListener];
         if (!_timer) {
-            _timer = [NSTimer scheduledTimerWithTimeInterval:0.5f target:self selector:@selector(processTimerForAX) userInfo:nil repeats:YES];
+            _timer = [NSTimer scheduledTimerWithTimeInterval:delay target:self selector:@selector(processTimerForAX) userInfo:nil repeats:YES];
         }
     }
     return self;

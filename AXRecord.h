@@ -6,6 +6,9 @@
 //  Copyright © 2017 Christian Frisson and Sylvain Malacria. All rights reserved.
 //
 
-int start_ax(char* filename);
+/// Initial default delay values:
+/// elementTrackDelay=0.5
+/// windowTrackDelay=0.2
+int start_ax(char* filename, float elementTrackDelay, float windowTrackDelay);
 
 int stop_ax();

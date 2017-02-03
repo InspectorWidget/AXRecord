@@ -17,7 +17,7 @@
 
 @property XMLFileAccessMethods* xmlFileAccess; // The xml document corresponding to all the events
 
--(id)initWithXMLFileAccess:(XMLFileAccessMethods*)xml;
+-(id)initWithDelay:(float)delay andXMLFileAccess:(XMLFileAccessMethods*)xml;
 
 +(AXUIElementRef)systemWideElement;
 
