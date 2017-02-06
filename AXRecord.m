@@ -7,25 +7,13 @@
 //
 
 #include "AXRecord.h"
+#include "AXRecordController.h"
 
-#import <Cocoa/Cocoa.h>
-#import "AXElementTracker.h"
-#import "AppTracker.h"
-#import "WindowTracker.h"
-#import "XMLFileAccessMethods.h"
-
-AXElementTracker* elementTracker;
-WindowTracker* windowTracker;
-AppTracker* appTracker;
-XMLFileAccessMethods* xmlFileAccess;
+AXRecordController* controller;
 
 int start_ax(char* filename, float elementTrackDelay, float windowTrackDelay){
 
-    xmlFileAccess = [[XMLFileAccessMethods alloc] initWithFilename:[NSString stringWithUTF8String:filename]];
-    elementTracker = [[AXElementTracker alloc] initWithDelay:elementTrackDelay andXMLFileAccess:xmlFileAccess];
-    windowTracker = [[WindowTracker alloc] initWithDelay:windowTrackDelay andXMLFileAccess:xmlFileAccess];
-    appTracker= [[AppTracker alloc] initWithXMLFileAccess:xmlFileAccess];
-
+    controller = [[AXRecordController alloc] initWithFilename:[NSString stringWithUTF8String:filename] andElementTrackDelay:elementTrackDelay andWindowTrackDelay:windowTrackDelay ];
     NSLog(@"elementTrackDelay %f",elementTrackDelay);
     NSLog(@"windowTrackDelay %f",windowTrackDelay);
 
@@ -33,15 +21,7 @@ int start_ax(char* filename, float elementTrackDelay, float windowTrackDelay){
 }
 
 int stop_ax(){
-    [appTracker stop];
-    [windowTracker stop];
-    [elementTracker stop];
-    [xmlFileAccess close];
-
-    appTracker = nil;
-    windowTracker = nil;
-    elementTracker = nil;
-    xmlFileAccess = nil;
-
+    [controller stop];
+    controller = nil;
     return 0;
 }

@@ -10,7 +10,8 @@ message("AXRecord")
 
 set(${LIBNAME}_HDRS 
 	AXRecord.h
-        AXElementTracker.h
+	AXRecordController.h
+	AXElementTracker.h
 	AXSelectedArray.h
 	AppLogger.h
 	AppTracker.h
@@ -26,7 +27,8 @@ set(${LIBNAME}_HDRS
 
 set(${LIBNAME}_SRCS 
 	AXRecord.m
-        AXElementTracker.m
+	AXRecordController.m
+	AXElementTracker.m
 	AXSelectedArray.m
 	AppLogger.m
 	AppTracker.m
@@ -37,7 +39,6 @@ set(${LIBNAME}_SRCS
 	WindowInfoEvent.m
 	WindowTracker.m
 	XMLFileAccessMethods.m
-	main.m
 	platform-cocoa.m
 )
 
@@ -138,7 +139,6 @@ set(${CLIAPPNAME}_SRCS
 # Build all Objective-C as ARC.
 # Otherwise with Xcode 7.3: "error: cannot synthesize weak property in file using manual reference counting"
 set_source_files_properties( 
-	ConsoleController.m
 	ConsoleController.m
 PROPERTIES COMPILE_FLAGS "-fobjc-arc")
 
