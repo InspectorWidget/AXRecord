@@ -54,11 +54,11 @@
 }
 
 -(void)processTimer{
-    [self updateMyWindows];
+    [self update];
 }
 
 # pragma mark called periodically to check wether or not events should be fired
--(void)updateMyWindows{
+-(void)update{
     uint64 clock = os_gettime_ns();
     
     NSArray* newWindowsInfoArray = [WindowGrabber getWindowList];

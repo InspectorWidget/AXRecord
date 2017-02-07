@@ -8,8 +8,9 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "DisplaysTracker.h"
 #import "WindowTracker.h"
 
-@interface ConsoleController : NSObject <WindowTrackerDelegate>
+@interface ConsoleController : NSObject <DisplaysTrackerDelegate,WindowTrackerDelegate>
 
 @end

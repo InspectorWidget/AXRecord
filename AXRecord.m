@@ -13,7 +13,10 @@ AXRecordController* controller;
 
 int start_ax(char* filename, float elementTrackDelay, float windowTrackDelay){
 
-    controller = [[AXRecordController alloc] initWithFilename:[NSString stringWithUTF8String:filename] andElementTrackDelay:elementTrackDelay andWindowTrackDelay:windowTrackDelay ];
+    controller = [[AXRecordController alloc]
+            initWithFilename:[NSString stringWithUTF8String:filename]
+            andElementTrackDelay:elementTrackDelay
+            andWindowTrackDelay:windowTrackDelay ];
     NSLog(@"elementTrackDelay %f",elementTrackDelay);
     NSLog(@"windowTrackDelay %f",windowTrackDelay);
 

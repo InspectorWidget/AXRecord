@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "DisplaysInfoEvent.h"
 #import "WindowInfoEvent.h"
 
 @interface XMLFileAccessMethods : NSObject
@@ -20,6 +21,8 @@
                            andSiblings:(NSArray*)siblings
                                 atTime:(NSTimeInterval)time
                                atClock:(uint64)clock;
+
+-(BOOL)addXMLElementToFileForDisplaysEvent:(DisplaysInfoEvent*)event;
 
 -(BOOL)addXMLElementToFileForWindowEvent:(WindowInfoEvent*)event;
 

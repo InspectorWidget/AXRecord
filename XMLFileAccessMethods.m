@@ -269,6 +269,67 @@ return NO;
     
 }
 
+/** Create a XML Element for a displaysEvent
+ @param DisplaysInfoEvent a displays event info
+ @return a NSXMLElement corresponding to the XML description of this displaysEvent
+ */
+-(BOOL)addXMLElementToFileForDisplaysEvent:(DisplaysInfoEvent*)event{
+    NSXMLElement* element = [self createXMLElementForDisplaysInfoEvent:event];
+    return [self addXMLElementToRoot:element];
+}
+
+/** Create a XML Element for a windowEvent
+ @param WindowInfoEvent a window event info
+ @return a NSXMLElement corresponding to the XML description of this windowEvent
+ */
+
+
+-(NSXMLElement*)createXMLElementForDisplaysInfoEvent:(DisplaysInfoEvent*)event{
+    NSXMLElement *xmlElement = [[NSXMLElement alloc] initWithName:@"displaysEvent"];
+    [xmlElement addAttribute:[NSXMLNode attributeWithName:@"time" stringValue:[NSString stringWithFormat:@"%f",[event timestamp]]]];
+    [xmlElement addAttribute:[NSXMLNode attributeWithName:@"clock" stringValue:[NSString stringWithFormat:@"%" PRIu64,[event clock]]]];
+
+    NSXMLElement *allDisplays = [[NSXMLElement alloc] initWithName:@"allDisplays"];
+    for(DisplayInfo* display in [event displays]){
+        NSXMLElement *displayXML = [[NSXMLElement alloc] initWithName:@"display"];
+        [self addAttributeToXMLElement:displayXML forDisplay:display];
+        [allDisplays addChild:displayXML];
+    }
+    [xmlElement addChild:allDisplays];
+    uint64 _clock = os_gettime_ns();
+    [xmlElement addAttribute:[NSXMLNode attributeWithName:@"took" stringValue:[NSString stringWithFormat:@"%" PRIu64,_clock-[event clock]]]];
+
+    return xmlElement;
+}
+
+//[NSNumber numberWithUnsignedInt:_displayID]
+
+-(void)addAttributeToXMLElement:(NSXMLElement*)element forDisplay:(DisplayInfo*)displayInfo{
+    [element  addAttribute:[NSXMLNode attributeWithName:@"id" stringValue:[[displayInfo displayIDNumber] stringValue]]];
+    [element  addAttribute:[NSXMLNode attributeWithName:@"screen" stringValue:[[displayInfo screenNumber] stringValue]]];
+    [element  addAttribute:[NSXMLNode attributeWithName:@"active" stringValue:([displayInfo active] ? @"true" : @"false")]];
+    [element  addAttribute:[NSXMLNode attributeWithName:@"main" stringValue:([displayInfo main] ? @"true" : @"false")]];
+    NSXMLElement *displayBounds = [[NSXMLElement alloc] initWithName:@"bounds"];
+    [displayBounds  addAttribute:[NSXMLNode attributeWithName:@"x" stringValue:[NSString stringWithFormat:@"%.0f",[displayInfo displayBounds].origin.x]]];
+    [displayBounds  addAttribute:[NSXMLNode attributeWithName:@"y" stringValue:[NSString stringWithFormat:@"%.0f",[displayInfo displayBounds].origin.y]]];
+    [displayBounds  addAttribute:[NSXMLNode attributeWithName:@"w" stringValue:[NSString stringWithFormat:@"%.0f",[displayInfo displayBounds].size.width]]];
+    [displayBounds  addAttribute:[NSXMLNode attributeWithName:@"h" stringValue:[NSString stringWithFormat:@"%.0f",[displayInfo displayBounds].size.height]]];
+    [element addChild:displayBounds];
+    NSXMLElement *rotation = [[NSXMLElement alloc] initWithName:@"rotation"];
+    [rotation  addAttribute:[NSXMLNode attributeWithName:@"deg" stringValue:[NSString stringWithFormat:@"%.0f",[displayInfo screenRotation]]]];
+    [element addChild:rotation];
+    NSXMLElement *size = [[NSXMLElement alloc] initWithName:@"size"];
+    NSXMLElement *pixels = [[NSXMLElement alloc] initWithName:@"px"];
+    [pixels  addAttribute:[NSXMLNode attributeWithName:@"w" stringValue:[NSString stringWithFormat:@"%ld",[displayInfo pixelsWide]]]];
+    [pixels  addAttribute:[NSXMLNode attributeWithName:@"h" stringValue:[NSString stringWithFormat:@"%ld",[displayInfo pixelsHigh]]]];
+    [size addChild:pixels];
+    NSXMLElement *mm = [[NSXMLElement alloc] initWithName:@"mm"];
+    [mm  addAttribute:[NSXMLNode attributeWithName:@"w" stringValue:[NSString stringWithFormat:@"%.0f",[displayInfo screenSize].width]]];
+    [mm  addAttribute:[NSXMLNode attributeWithName:@"h" stringValue:[NSString stringWithFormat:@"%.0f",[displayInfo screenSize].height]]];
+    [size addChild:mm];
+    [element addChild:size];
+}
+
 
 /** Create a XML Element for a windowEvent
  @param WindowInfoEvent a window event info

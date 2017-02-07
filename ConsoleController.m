@@ -10,10 +10,12 @@
 #import "ConsoleController.h"
 #import "AXElementTracker.h"
 #import "AppTracker.h"
+#import "DisplaysTracker.h"
 #import "WindowGrabber.h"
 
 @implementation ConsoleController{
     AXElementTracker* elementTracker;
+    DisplaysTracker* displaysTracker;
     WindowTracker* windowTracker;
     AppTracker* appTracker;
     XMLFileAccessMethods* xmlFileAccess;
@@ -29,6 +31,10 @@
         
         elementTracker = [[AXElementTracker alloc] initWithDelay:0.5 andXMLFileAccess:xmlFileAccess];
         
+        displaysTracker = [[DisplaysTracker alloc] initWithXMLFileAccess:xmlFileAccess];
+        [displaysTracker setDisplaysTrackerDelegate:self];
+        [displaysTracker update];
+
         windowTracker = [[WindowTracker alloc] initWithDelay:0.2 andXMLFileAccess:xmlFileAccess];
         [windowTracker setWindowTrackerDelegate:self];
        
@@ -36,6 +42,13 @@
         
         }
     return self;
+}
+
+-(void)displaysInfoEventHappened:(DisplaysInfoEvent*)displaysEvent{
+    NSLog(@"displaysInfoEventHappened");
+    if(xmlFileAccess){
+        [xmlFileAccess addXMLElementToFileForDisplaysEvent:displaysEvent];
+    }
 }
 
 -(void)windowInfoEventHappened:(WindowInfoEvent*)windowEvent{

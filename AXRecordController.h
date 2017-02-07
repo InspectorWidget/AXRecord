@@ -7,11 +7,14 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "DisplaysTracker.h"
 #import "WindowTracker.h"
 
-@interface AXRecordController : NSObject <WindowTrackerDelegate>
+@interface AXRecordController : NSObject <DisplaysTrackerDelegate,WindowTrackerDelegate>
 
--(id)initWithFilename:(NSString *)filename andElementTrackDelay:(float)elementTrackDelay andWindowTrackDelay:(float)windowTrackDelay;
+-(id)initWithFilename:(NSString *)filename
+  andElementTrackDelay:(float)elementTrackDelay
+  andWindowTrackDelay:(float)windowTrackDelay;
 -(id)stop;
 
 @end

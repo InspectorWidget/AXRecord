@@ -15,6 +15,10 @@ set(${LIBNAME}_HDRS
 	AXSelectedArray.h
 	AppLogger.h
 	AppTracker.h
+	DisplayInfo.h
+	DisplaysGrabber.h
+	DisplaysInfoEvent.h
+	DisplaysTracker.h
 	UIElementUtilities.h
 	UIElementUtilitiesAdditions.h
 	VnrWindowInfo.h
@@ -32,6 +36,10 @@ set(${LIBNAME}_SRCS
 	AXSelectedArray.m
 	AppLogger.m
 	AppTracker.m
+	DisplayInfo.m
+	DisplaysGrabber.m
+	DisplaysInfoEvent.m
+	DisplaysTracker.m
 	UIElementUtilities.m
 	UIElementUtilitiesAdditions.m
 	VnrWindowInfo.m
@@ -56,6 +64,10 @@ set_source_files_properties(
 	AXSelectedArray.m
 	AppLogger.m
 	AppTracker.m
+	DisplayInfo.m
+	DisplaysGrabber.m
+	DisplaysInfoEvent.m
+	DisplaysTracker.m
 	UIElementUtilitiesAdditions.m
 	VnrWindowInfo.m
 	WindowGrabber.m

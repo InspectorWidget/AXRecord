@@ -30,7 +30,7 @@
 -(id)initWithDelay:(float)delay andXMLFileAccess:(XMLFileAccessMethods*)xml;
 // retrieve an array of current window snapshots
 +(NSArray*)getCurrentWindowsInfo;
-
+-(void)update;
 -(void)printWindows;
 
 -(void)stop;
