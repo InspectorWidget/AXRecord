@@ -21,12 +21,11 @@
     self = [super init];
     if(self){
         NSLog(@"init windowTracker");
-        windowsInfoArray = [WindowGrabber getWindowList];
+        //windowsInfoArray = [WindowGrabber getWindowList]; /// to send a windowEvent at first call of update
         self.xmlFileAccess = xml;
         if (!_timer) {
             _timer = [NSTimer scheduledTimerWithTimeInterval:delay target:self selector:@selector(processTimer) userInfo:nil repeats:YES];
         }
-      
     }
     return self;
 }
@@ -188,6 +187,11 @@
             WindowInfoEvent* event = [[WindowInfoEvent alloc] initWith:info1 atLayerNumber:i forEventType:vnrWindowAppeared atTimestamp:time atClock:clock andAllWindows:newWindowsInfos];
             [result addObject:event];
         }
+    }
+    if([oldWindowsInfos count]==0 && [newWindowsInfos count]>0){
+        VnrWindowInfo *info1 = [newWindowsInfos objectAtIndex:0];
+        WindowInfoEvent* event = [[WindowInfoEvent alloc] initWith:info1 atLayerNumber:0 forEventType:vnrWindowAppeared atTimestamp:time atClock:clock andAllWindows:newWindowsInfos];
+        [result addObject:event];
     }
     if([result count]>0){
         return result;
