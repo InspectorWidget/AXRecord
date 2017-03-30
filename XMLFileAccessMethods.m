@@ -185,11 +185,14 @@ return NO;
         for( nameIndex = 0; nameIndex < numOfNames; nameIndex++ ) {
             
             NSString *	theName = NULL;
+            NSString *	theDesc = NULL;
             
             // Grab name
             theName = [theNames objectAtIndex:nameIndex];
-            
-            [xmlelement addAttribute:[NSXMLNode attributeWithName:theName stringValue:[UIElementUtilities descriptionForUIElement:element attribute:theName beingVerbose:false]]];
+            theDesc = [UIElementUtilities descriptionForUIElement:element attribute:theName beingVerbose:false];
+
+            if([theName length]!=0)
+                [xmlelement addAttribute:[NSXMLNode attributeWithName:theName stringValue:theDesc]];
             
         }
         
@@ -213,7 +216,8 @@ return NO;
             theDesc = [UIElementUtilities descriptionOfAction:theName ofUIElement:element];
             
             // Add string
-            [xmlelement addAttribute:[NSXMLNode attributeWithName:theName stringValue:theDesc]];
+            if([theName length]!=0)
+                [xmlelement addAttribute:[NSXMLNode attributeWithName:theName stringValue:theDesc]];
         }
         
     }
