@@ -137,7 +137,7 @@ NSString *const UIElementUtilitiesNoDescription = @"No Description";
     if (attributeNames) {
         if ( [attributeNames indexOfObject:(NSString *)attribute] != NSNotFound
                 &&
-        	AXUIElementCopyAttributeValue(element, (CFStringRef)attribute, (CFTypeRef *)&result) == kAXErrorSuccess
+            AXUIElementCopyAttributeValue(element, (CFStringRef)attribute, (CFTypeRef *)&result) == kAXErrorSuccess
         ) {
             [result autorelease];
         }
@@ -451,9 +451,9 @@ NSString *const UIElementUtilitiesNoDescription = @"No Description";
         if (AXValueGetType(theValue) != kAXValueIllegalType) {
             theValueDescString = [self stringDescriptionOfAXValue:theValue beingVerbose:beVerbose];
         }
-        else if (CFGetTypeID(theValue) == CFArrayGetTypeID()) {
+        /*else if (CFGetTypeID(theValue) == CFArrayGetTypeID()) {
             theValueDescString = [NSString stringWithFormat:@"<array of size %d>", [(NSArray *)theValue count]];
-        }
+        }*/
         else if (CFGetTypeID(theValue) == AXUIElementGetTypeID()) {
             
             NSString *	uiElementRole  	= NULL;
@@ -548,23 +548,40 @@ NSString *const UIElementUtilitiesNoDescription = @"No Description";
 // -------------------------------------------------------------------------------
 + (NSString *)descriptionForUIElement:(AXUIElementRef)uiElement attribute:(NSString *)name beingVerbose:(BOOL)beVerbose
 {
-    NSString *	theValueDescString	= NULL;
-    CFTypeRef	theValue;
-    CFIndex	count;
-    if (([name isEqualToString:NSAccessibilityChildrenAttribute]
-            ||
-         [name isEqualToString:NSAccessibilityRowsAttribute]
-        )
-            &&
-        AXUIElementGetAttributeValueCount(uiElement, (CFStringRef)name, &count) == kAXErrorSuccess) {
-        // No need to get the value of large arrays - we just display their size.
-		// We don't want to do this with every attribute because AXUIElementGetAttributeValueCount on non-array valued
-		// attributes will cause debug spewage.
-        theValueDescString = [NSString stringWithFormat:@"<array of size %ld>", count];
-    } else if (AXUIElementCopyAttributeValue ( uiElement, (CFStringRef)name, &theValue ) == kAXErrorSuccess && theValue) {
-        theValueDescString = [self descriptionOfValue:theValue beingVerbose:beVerbose];
-    }
-    return theValueDescString;
+        NSString *	theValueDescString	= NULL;
+        CFTypeRef	theValue;
+        CFIndex	count;
+        if (([name isEqualToString:NSAccessibilityChildrenAttribute]
+             ||
+             [name isEqualToString:NSAccessibilityRowsAttribute]
+             )
+                &&
+                AXUIElementGetAttributeValueCount(uiElement, (CFStringRef)name, &count) == kAXErrorSuccess) {
+            // No need to get the value of large arrays - we just display their size.
+            // We don't want to do this with every attribute because AXUIElementGetAttributeValueCount on non-array valued
+            // attributes will cause debug spewage.
+            theValueDescString = [NSString stringWithFormat:@"<array of size %ld>", count];
+        } else if (AXUIElementCopyAttributeValue ( uiElement, (CFStringRef)name, &theValue ) == kAXErrorSuccess && theValue) {
+            if( CFGetTypeID(theValue) == CFArrayGetTypeID()  ){
+                count = [(NSArray *)theValue count];
+                for (i = 0U; i < count; i++) {
+                    CFTypeRef t = CFArrayGetValueAtIndex((CFArrayRef)theValue, i);
+                    id obj = (id)t;
+                    theLocalValueDescString = [self descriptionOfAXDescriptionOfUIElement:t];
+                    if ([theLocalValueDescString isEqualToString:UIElementUtilitiesNoDescription]){
+                        theLocalValueDescString = [self descriptionOfValue:t beingVerbose:beVerbose];
+                    }
+                    theValueDescString = [[theValueDescString stringByAppendingString:@" "] stringByAppendingString:theLocalValueDescString];
+                }
+                if(theValueDescString == nil){
+                    theValueDescString = [NSString stringWithFormat:@"<array of size %d>", [(NSArray *)theValue count]];
+                }
+            }
+            else{
+                theValueDescString = [self descriptionOfValue:theValue beingVerbose:beVerbose];
+            }
+        }
+        return theValueDescString;
 }
 
 // This method returns a 'no description' string by default
