@@ -74,6 +74,15 @@ static AXUIElementRef systemWideElement;
 }
 
 
+- (void)log:(pid_t)ownerPID{
+    if(ownerPID!=0){
+    uint64 clock = os_gettime_ns();
+    NSTimeInterval time = [[NSDate date] timeIntervalSince1970];
+    AXUIElementRef app_element = AXUIElementCreateApplication(ownerPID);
+    NSXMLElement* children = [self getXMLDescriptionOfElementAndChildren:app_element];
+    [self.xmlFileAccess addXMLElementToFileForApplication:children atTime:time atClock:clock];
+    }
+}
 
 
 

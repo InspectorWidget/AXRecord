@@ -21,6 +21,8 @@
 
 +(AXUIElementRef)systemWideElement;
 
+-(void)log:(pid_t)ownerPID;
+
 -(void)stop;
 
 @end

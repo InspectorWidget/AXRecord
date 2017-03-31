@@ -12,6 +12,7 @@
 #import "DisplaysTracker.h"
 #import "WindowTracker.h"
 #import "XMLFileAccessMethods.h"
+#import "WindowInfoEvent.h"
 
 @implementation AXRecordController{
     AXElementTracker* elementTracker;
@@ -65,6 +66,11 @@
     NSLog(@"windowInfoEventHappened");
     if(xmlFileAccess){
         [xmlFileAccess addXMLElementToFileForWindowEvent:windowEvent];
+    }
+    if(windowEvent && [windowEvent eventType] == vnrWindowAppeared ){
+        NSString* ownerName = [[windowEvent windowInfo] ownerName];
+        pid_t ownerPID = [[windowEvent windowInfo] ownerPID];
+        [elementTracker log:ownerPID];
     }
 }
 
