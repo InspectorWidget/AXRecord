@@ -16,24 +16,23 @@
     NSMutableArray *windows = (NSMutableArray *)CFBridgingRelease(CGWindowListCopyWindowInfo(kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements, kCGNullWindowID));
     NSMutableArray *vnrWindows = [NSMutableArray new];
     for (NSDictionary *window in windows) {
+        NSString *owner = [window objectForKey:@"kCGWindowOwnerName"];
+        NSString *name = [window objectForKey:@"kCGWindowName"];
         int layer = [[window objectForKey:@"kCGWindowLayer"] intValue];
-        
-        if(layer==0){
+        //if(layer==0){
             BOOL onScreen = [[window objectForKey:@"kCGWindowIsOnscreen"] boolValue];
             NSDictionary* bounds = [window objectForKey:@"kCGWindowBounds"];
             int x = [[bounds objectForKey:@"X"] intValue];
             int y = [[bounds objectForKey:@"Y"] intValue];
             int w = [[bounds objectForKey:@"Width"] intValue];
             int h = [[bounds objectForKey:@"Height"] intValue];
-            NSString *owner = [window objectForKey:@"kCGWindowOwnerName"];
-            NSString *name = [window objectForKey:@"kCGWindowName"];
             pid_t ownerPID = [[window objectForKey:@"kCGWindowOwnerPID"] intValue];
             CGWindowID windowID = [[window objectForKey:@"kCGWindowNumber"] intValue];
 
-            VnrWindowInfo* winfo = [[VnrWindowInfo alloc] initWithFrame:CGRectMake(x,y,w,h) title:name owner:owner ownerPID:ownerPID andWindowID:windowID];
+            VnrWindowInfo* winfo = [[VnrWindowInfo alloc] initWithFrame:CGRectMake(x,y,w,h) title:name owner:owner ownerPID:ownerPID windowID:windowID layer:layer];
             [winfo setIsOnScreen:onScreen];
             [vnrWindows addObject:winfo];
-        }
+        //}
     }
         
  

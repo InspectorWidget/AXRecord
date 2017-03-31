@@ -12,7 +12,12 @@
 @implementation VnrWindowInfo
 
 
--(id)initWithFrame:(CGRect)rect title:(NSString*)title owner:(NSString*)owner ownerPID:(pid_t)PID andWindowID:(CGWindowID)windowID{
+-(id)initWithFrame:(CGRect)rect
+  title:(NSString*)title
+  owner:(NSString*)owner
+  ownerPID:(pid_t)PID
+  windowID:(CGWindowID)windowID
+  layer:(int)layer{
     self = [super init];
     if (self) {
         self.frame = rect;
@@ -20,6 +25,7 @@
         self.ownerName = owner;
         self.ownerPID = PID;
         self.windowID = windowID;
+        self.layer = layer;
     }
     return self;
 }

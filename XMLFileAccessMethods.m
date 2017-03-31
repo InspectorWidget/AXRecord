@@ -378,6 +378,7 @@ return NO;
     [element  addAttribute:[NSXMLNode attributeWithName:@"id" stringValue:[[windowInfo windowIDNumber] stringValue]]];
     [element  addAttribute:[NSXMLNode attributeWithName:@"app" stringValue:[windowInfo ownerName]]];
     [element  addAttribute:[NSXMLNode attributeWithName:@"title" stringValue:[windowInfo title]]];
+    [element  addAttribute:[NSXMLNode attributeWithName:@"layer" stringValue:[NSString stringWithFormat:@"%d",[windowInfo layer]]]];
     [element  addAttribute:[NSXMLNode attributeWithName:@"x" stringValue:[NSString stringWithFormat:@"%.0f",windowInfo.frame.origin.x]]];
     [element  addAttribute:[NSXMLNode attributeWithName:@"y" stringValue:[NSString stringWithFormat:@"%.0f",windowInfo.frame.origin.y]]];
     [element  addAttribute:[NSXMLNode attributeWithName:@"w" stringValue:[NSString stringWithFormat:@"%.0f",windowInfo.frame.size.width]]];
