@@ -564,10 +564,10 @@ NSString *const UIElementUtilitiesNoDescription = @"No Description";
         } else if (AXUIElementCopyAttributeValue ( uiElement, (CFStringRef)name, &theValue ) == kAXErrorSuccess && theValue) {
             if( CFGetTypeID(theValue) == CFArrayGetTypeID()  ){
                 count = [(NSArray *)theValue count];
-                for (i = 0U; i < count; i++) {
+                for (int i = 0U; i < count; i++) {
                     CFTypeRef t = CFArrayGetValueAtIndex((CFArrayRef)theValue, i);
                     id obj = (id)t;
-                    theLocalValueDescString = [self descriptionOfAXDescriptionOfUIElement:t];
+                    NSString * theLocalValueDescString = [self descriptionOfAXDescriptionOfUIElement:t];
                     if ([theLocalValueDescString isEqualToString:UIElementUtilitiesNoDescription]){
                         theLocalValueDescString = [self descriptionOfValue:t beingVerbose:beVerbose];
                     }
